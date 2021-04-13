@@ -152,12 +152,16 @@ for file in pbar(dir):
 
         dfCombined.to_csv(PATH + "/" + DIR_HOME + '/TOTALS_' + str(THRESHOLD) + '_' + str(SEARCH_RADIUS) + '.csv', index = False)
 
-        dictionary_data = {Home: str(DIR_HOME), AreaofPROT: len(PROTEIN_DF), AreaofCYT: len(dfCombined[dfCombined['ValueCYT'] > 700]), Neighbours: sum(dfCombined['Neighbours']), Self_neighbours: sum(dfCombined['Self_neighbours'])}
-        DICTIONARY_LIST.append(dictionary_data)
+        LIST_of_LISTS[0].append(str(DIR_HOME))
+        LIST_of_LISTS[1].append(THRESHOLD)
+        LIST_of_LISTS[2].append(SEARCH_RADIUS)
+        LIST_of_LISTS[3].append((dfCombined['Neighbours']).sum())
+        LIST_of_LISTS[4].append((dfCombined['Self-neighbours']).sum())
+
     except:
         continue
 
 
-df_final = pd.DataFrame.from_dict(DICTIONARY_LIST)
+df_final = pd.DataFrame(LIST_of_LISTS, columns = ["REPEAT","THRESHOLD","SEARCH_RADIUS","KNN","KNN_SELF"])
 
 df_final.to_csv(PATH + "/TOTAL/" + str(THRESHOLD) + "_" + str(SEARCH_RADIUS) + ".csv", index = False)
