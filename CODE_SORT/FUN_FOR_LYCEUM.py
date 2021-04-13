@@ -17,7 +17,7 @@ HM_LOW_VAL = 0
 HM_HIGH_VAL_SENS = 1000
 HM_HIGH_VAL = 1000
 HEATMAP_SENS_CHANNEL_CYT = GREEN
-LIST_of_LISTS = {[],[],[],[],[],[]}
+LIST_of_LISTS = {'DIR_HOME':[],'THRESHOLD': [], 'SEARCH_RADIUS': [],'KNN':[],'KNN_SELF':[],'PIXEL_LOSS':[]}
 
 
 PATH, THRESH, RADI = sys.argv[1], sys.argv[2], sys.argv[3]
@@ -153,17 +153,17 @@ for file in pbar(dir):
 
         dfCombined.to_csv(PATH + "/" + DIR_HOME + '/TOTALS_' + str(THRESHOLD) + '_' + str(SEARCH_RADIUS) + '.csv', index = False)
 
-        LIST_of_LISTS[0].append(str(DIR_HOME))
-        LIST_of_LISTS[1].append(THRESHOLD)
-        LIST_of_LISTS[2].append(SEARCH_RADIUS)
-        LIST_of_LISTS[3].append((dfCombined['Neighbours']).sum())
-        LIST_of_LISTS[4].append((dfCombined['Self-neighbours']).sum())
-        LIST_of_LISTS[5].append(len(PROTEIN_DF))
+        LIST_of_LISTS['DIR_HOME'].append(str(DIR_HOME))
+        LIST_of_LISTS['THRESHOLD'].append(THRESHOLD)
+        LIST_of_LISTS['SEARCH_RADIUS'].append(SEARCH_RADIUS)
+        LIST_of_LISTS['KNN'].append((dfCombined['Neighbours']).sum())
+        LIST_of_LISTS['KNN_SELF'].append((dfCombined['Self-neighbours']).sum())
+        LIST_of_LISTS['PIXEL_LOSS'].append(len(PROTEIN_DF))
 
     except:
         continue
 
 
-df_final = pd.DataFrame(LIST_of_LISTS, columns = ["REPEAT","THRESHOLD","SEARCH_RADIUS","KNN","KNN_SELF"])
+df_final = pd.DataFrame(LIST_of_LISTS, columns = ["REPEAT","THRESHOLD","SEARCH_RADIUS","KNN","KNN_SELF","PIXEL_LOSS"])
 
 df_final.to_csv(PATH + "/TOTAL/" + str(THRESHOLD) + "_" + str(SEARCH_RADIUS) + ".csv", index = False)
