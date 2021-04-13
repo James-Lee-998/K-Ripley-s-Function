@@ -79,7 +79,7 @@ def setColour_RATIO(row):
         val = abs(round(int(255 * colour)))
         pixels[x,y] = (val,0,0)
     elif n==s:
-        if n+s ==0:
+        if n+s == 0:
             pixels[x,y] = (255,255,255)
         else:
             pixels[x,y] = (0,0,0)
