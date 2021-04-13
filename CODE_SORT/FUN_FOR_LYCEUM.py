@@ -17,7 +17,8 @@ HM_LOW_VAL = 0
 HM_HIGH_VAL_SENS = 1000
 HM_HIGH_VAL = 1000
 HEATMAP_SENS_CHANNEL_CYT = GREEN
-DICTIONARY_LIST = []
+LIST_of_LISTS = [[],[],[],[],[]]
+
 
 PATH, THRESH, RADI = sys.argv[1], sys.argv[2], sys.argv[3]
 
