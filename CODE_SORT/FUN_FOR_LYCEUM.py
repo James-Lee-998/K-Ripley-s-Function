@@ -17,12 +17,13 @@ HM_LOW_VAL = 0
 HM_HIGH_VAL_SENS = 1000
 HM_HIGH_VAL = 1000
 HEATMAP_SENS_CHANNEL_CYT = GREEN
-LIST_of_LISTS = [[],[],[],[],[],[]]
+LIST_of_LISTS = {[],[],[],[],[],[]}
 
 
 PATH, THRESH, RADI = sys.argv[1], sys.argv[2], sys.argv[3]
 
 THRESHOLD = int(THRESH)
+THRESHOLD_CYT = 700
 SEARCH_RADIUS = int(RADI)
 
 def setColour(row):
@@ -112,7 +113,7 @@ for file in pbar(dir):
         PROTEIN_DF = pd.DataFrame(pd.read_csv(PATH + "/" + DIR_HOME + '/TAX.txt' , sep = "\t", header = None, names = ['X','Y','Value']), columns = ['X','Y','Value'])
         PROTEIN_DF = PROTEIN_DF[PROTEIN_DF['Value'] > int(THRESHOLD)]
         CYT_DF = pd.DataFrame(pd.read_csv(PATH + "/" + DIR_HOME + '/CYT.txt' , sep = "\t", header = None, names = ['X','Y','Value']), columns = ['X','Y','Value'])
-        CYT_DF = CYT_DF[CYT_DF['Value'] > int(THRESHOLD)]
+        CYT_DF = CYT_DF[CYT_DF['Value'] > int(THRESHOLD_CYT)]
 
         img_CYT = Image.new(mode='RGB',size=(maxX, maxY))
         pixels = img_CYT.load()
@@ -163,6 +164,6 @@ for file in pbar(dir):
         continue
 
 
-df_final = pd.DataFrame(zip(LIST_of_LISTS), columns = ["REPEAT","THRESHOLD","SEARCH_RADIUS","KNN","KNN_SELF"])
+df_final = pd.DataFrame(LIST_of_LISTS, columns = ["REPEAT","THRESHOLD","SEARCH_RADIUS","KNN","KNN_SELF"])
 
 df_final.to_csv(PATH + "/TOTAL/" + str(THRESHOLD) + "_" + str(SEARCH_RADIUS) + ".csv", index = False)
