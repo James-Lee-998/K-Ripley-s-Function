@@ -153,7 +153,7 @@ for file in pbar(dir):
 
         dfCombined.to_csv(PATH + "/" + DIR_HOME + '/TOTALS_' + str(THRESHOLD) + '_' + str(SEARCH_RADIUS) + '.csv', index = False)
 
-        LIST_of_LISTS['DIR_HOME'].append(str(DIR_HOME))
+        LIST_of_LISTS['DIR_HOME'].append(file)
         LIST_of_LISTS['THRESHOLD'].append(THRESHOLD)
         LIST_of_LISTS['SEARCH_RADIUS'].append(SEARCH_RADIUS)
         LIST_of_LISTS['KNN'].append((dfCombined['Neighbours']).sum())
