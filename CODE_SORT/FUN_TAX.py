@@ -22,8 +22,13 @@ LIST_of_LISTS = {'DIR_HOME':[],'THRESHOLD': [], 'SEARCH_RADIUS': [],'KNN':[],'KN
 PATH, THRESH, RADI = sys.argv[1], sys.argv[2], sys.argv[3]
 
 THRESHOLD = int(THRESH)
-THRESHOLD_CYT = 700
+THRESHOLD_CYT = 800
 SEARCH_RADIUS = int(RADI)
+
+if THRESHOLD_CYT == THRESHOLD:
+    CYT_img = True
+else:
+    CYT_img = False
 
 def setColour(row):
 # Determine the pixel colour for the heatmap based on the KNN value
@@ -128,11 +133,12 @@ for file in pbar(dir):
         CYT_DF = pd.DataFrame(pd.read_csv(PATH + "\\" + DIR_HOME + '\\CYT.txt' , sep = "\t", header = None, names = ['X','Y','Value']), columns = ['X','Y','Value'])
         CYT_DF = CYT_DF[CYT_DF['Value'] > int(THRESHOLD_CYT)]
 
-        img_CYT = Image.new(mode='RGB',size=(maxX, maxY))
-        pixels = img_CYT.load()
-        CYT_DF.apply(setColour_SENS_CYT, axis=1)
-        img_CYT_1 = img_CYT.transpose(PIL.Image.FLIP_TOP_BOTTOM)
-        img_CYT_1.save(PATH + "\\" + DIR_HOME + "\\HEATMAP_CYT_" + str(THRESHOLD) + ".png")
+        if CYT_img:
+            img_CYT = Image.new(mode='RGB',size=(maxX, maxY))
+            pixels = img_CYT.load()
+            CYT_DF.apply(setColour_SENS_CYT, axis=1)
+            img_CYT_1 = img_CYT.transpose(PIL.Image.FLIP_TOP_BOTTOM)
+            img_CYT_1.save(PATH + "\\" + DIR_HOME + "\\HEATMAP_CYT_" + str(THRESHOLD) + ".png")
 
         dfCombined = PROTEIN_DF.merge(CYT_DF, how = 'outer', on = ['X', 'Y'], suffixes= ('PROT', 'CYT'))
         dfCombined['ValuePROT'] = dfCombined.ValuePROT.fillna(0)
@@ -143,7 +149,7 @@ for file in pbar(dir):
         kdCYT = spatial.KDTree(CYT_DF)
         kdPROT = spatial.KDTree(dfPROT_for_tree)
 
-        dfCombined['Neighbours'] = dfCombined.apply(countNeighbours, axis = 1)
+        dfCombined['Neighbours'] = dfCombined.apply(countNeighbours, axis=1)
         dfCombined['Self-neighbours'] = dfCombined.apply(countNeighbours_self, axis = 1)
         dfCombined['Neighbours_from_CYT'] = dfCombined.apply(countNeighbours_cyt, axis = 1)
         dfCombined['CYT_Clustering'] = dfCombined.apply(countNeighbours_self_from_cyt, axis = 1)
