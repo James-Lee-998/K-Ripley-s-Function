@@ -17,14 +17,18 @@ HM_LOW_VAL = 0
 HM_HIGH_VAL_SENS = 1000
 HM_HIGH_VAL = 1000
 HEATMAP_SENS_CHANNEL_CYT = GREEN
-LIST_of_LISTS = {'DIR_HOME':[],'THRESHOLD': [], 'SEARCH_RADIUS': [],'KNN':[],'KNN_SELF':[],'PIXEL_LOSS':[]}
-
+LIST_of_LISTS = {'DIR_HOME':[],'THRESHOLD': [], 'SEARCH_RADIUS': [],'KNN':[],'KNN_SELF':[],'PIXEL_LOSS':[],'KNN_CYT':[], 'KNN_SELF_CYT':[], 'CYT_AREA':[], 'PROT_AREA':[], 'NORMAL':[]}
 
 PATH, THRESH, RADI = sys.argv[1], sys.argv[2], sys.argv[3]
 
 THRESHOLD = int(THRESH)
-THRESHOLD_CYT = 700
+THRESHOLD_CYT = 800
 SEARCH_RADIUS = int(RADI)
+
+if THRESHOLD_CYT == THRESHOLD:
+    CYT_img = True
+else:
+    CYT_img = False
 
 def setColour(row):
 # Determine the pixel colour for the heatmap based on the KNN value
@@ -88,17 +92,39 @@ def setColour_RATIO(row):
 
 def countNeighbours(row):
     # Method to count number of KNN per pixel value of PROTEIN
-    if row['ValuePROT'] <= int(THRESHOLD): # only calculates this metric if the pixel value at row is above the agreed threshold
+    if row['ValuePROT'] < int(THRESHOLD): # only calculates this metric if the pixel value at row is above the agreed threshold
             return 0
     else:
             return len(kdCYT.query_ball_point([row['X'],row['Y']],int(SEARCH_RADIUS)))
 
 def countNeighbours_self(row):
     # Method to count number of KNN per pixel value of PROTEIN
-    if row['ValuePROT'] <= int(THRESHOLD): # only calculates this metric if the pixel value at row is above the agreed threshold
+    if row['ValuePROT'] < int(THRESHOLD): # only calculates this metric if the pixel value at row is above the agreed threshold
             return 0
     else:
             return len(kdPROT.query_ball_point([row['X'],row['Y']],int(SEARCH_RADIUS)))
+
+def countNeighbours_cyt(row):
+    # Method to count number of KNN per pixel value of PROTEIN
+    if row['ValueCYT'] < int(THRESHOLD_CYT):
+        return 0
+    else:
+        return len(kdPROT.query_ball_point([row['X'],row['Y']],int(SEARCH_RADIUS)))
+
+def countNeighbours_self_from_cyt(row):
+    # Method to count number of KNN per pixel value of PROTEIN
+    if row['ValueCYT'] < int(THRESHOLD_CYT):
+        return 0
+    else:
+        return len(kdCYT.query_ball_point([row['X'],row['Y']],int(SEARCH_RADIUS)))
+
+def KNN_RATIO_CALC(row):
+    a,b,c,d = int(row['KNN']), int(row['CYT_AREA']), int(row['KNN_SELF']), int(row['PROT_AREA'])
+    try:
+        RATIO = (a/b)/(c/d)
+        return RATIO
+    except:
+        continue
 
 minX, maxX = int(0), int(1940)
 minY, maxY = int(0), int(1460)
@@ -115,11 +141,12 @@ for file in pbar(dir):
         CYT_DF = pd.DataFrame(pd.read_csv(PATH + "/" + DIR_HOME + '/CYT.txt' , sep = "\t", header = None, names = ['X','Y','Value']), columns = ['X','Y','Value'])
         CYT_DF = CYT_DF[CYT_DF['Value'] > int(THRESHOLD_CYT)]
 
-        img_CYT = Image.new(mode='RGB',size=(maxX, maxY))
-        pixels = img_CYT.load()
-        CYT_DF.apply(setColour_SENS_CYT, axis=1)
-        img_CYT_1 = img_CYT.transpose(PIL.Image.FLIP_TOP_BOTTOM)
-        img_CYT_1.save(PATH + "/" + DIR_HOME + "/HEATMAP_CYT_" + str(THRESHOLD) + ".png")
+        if CYT_img:
+            img_CYT = Image.new(mode='RGB',size=(maxX, maxY))
+            pixels = img_CYT.load()
+            CYT_DF.apply(setColour_SENS_CYT, axis=1)
+            img_CYT_1 = img_CYT.transpose(PIL.Image.FLIP_TOP_BOTTOM)
+            img_CYT_1.save(PATH + "/" + DIR_HOME + "/HEATMAP_CYT_" + str(THRESHOLD) + ".png")
 
         dfCombined = PROTEIN_DF.merge(CYT_DF, how = 'outer', on = ['X', 'Y'], suffixes= ('PROT', 'CYT'))
         dfCombined['ValuePROT'] = dfCombined.ValuePROT.fillna(0)
@@ -132,6 +159,8 @@ for file in pbar(dir):
 
         dfCombined['Neighbours'] = dfCombined.apply(countNeighbours, axis=1)
         dfCombined['Self-neighbours'] = dfCombined.apply(countNeighbours_self, axis = 1)
+        dfCombined['Neighbours_from_CYT'] = dfCombined.apply(countNeighbours_cyt, axis = 1)
+        dfCombined['CYT_Clustering'] = dfCombined.apply(countNeighbours_self_from_cyt, axis = 1)
 
         img_OPTN = Image.new(mode='RGB',size=(maxX, maxY))
         pixels = img_OPTN.load()
@@ -139,9 +168,11 @@ for file in pbar(dir):
         img_OPTN_1 = img_OPTN.transpose(PIL.Image.FLIP_TOP_BOTTOM)
         img_OPTN_1.save(PATH + "/" + DIR_HOME + "/HEATMAP_PROT_" + str(THRESHOLD) + ".png")
 
+        dfCorrected = dfCombined[dfCombined['ValuePROT'] > 0]
+
         img_KNN = Image.new(mode='RGB',size=(maxX, maxY), color = (255,255,255))
         pixels = img_KNN.load()
-        dfCombined.apply(setColour, axis=1)
+        dfCorrected.apply(setColour, axis=1)
         img_KNN_1 = img_KNN.transpose(PIL.Image.FLIP_TOP_BOTTOM)
         img_KNN_1.save(PATH + "/" + DIR_HOME + "/KNN_HEATMAP_" + str(THRESHOLD) + "_" + str(SEARCH_RADIUS) + ".png")
 
@@ -159,11 +190,18 @@ for file in pbar(dir):
         LIST_of_LISTS['KNN'].append((dfCombined['Neighbours']).sum())
         LIST_of_LISTS['KNN_SELF'].append((dfCombined['Self-neighbours']).sum())
         LIST_of_LISTS['PIXEL_LOSS'].append(len(PROTEIN_DF))
+        LIST_of_LISTS['KNN_CYT'].append((dfCombined['Neighbours_from_CYT']).sum())
+        LIST_of_LISTS['KNN_SELF_CYT'].append((dfCombined['CYT_Clustering']).sum())
+        LIST_of_LISTS['CYT_AREA'].append((len(CYT_DF)))
+        LIST_of_LISTS['PROT_AREA'].append((len(PROTEIN_DF)))
+        LIST_of_LISTS['NORMAL'].append((dfCombined['Neighbours'].sum())/(len(CYT_DF)))
 
     except:
         continue
 
 
-df_final = pd.DataFrame(LIST_of_LISTS, columns = ["DIR_HOME","THRESHOLD","SEARCH_RADIUS","KNN","KNN_SELF","PIXEL_LOSS"])
+df_final = pd.DataFrame(LIST_of_LISTS, columns = ["DIR_HOME","THRESHOLD","SEARCH_RADIUS","KNN","KNN_SELF","PIXEL_LOSS","KNN_CYT","KNN_SELF_CYT", "CYT_AREA", "PROT_AREA","NORMAL"])
+
+df_final['KNN_RATIO'] = df_final.apply(KNN_RATIO_CALC, axis = 1)
 
 df_final.to_csv(PATH + "/TOTAL/" + str(THRESHOLD) + "_" + str(SEARCH_RADIUS) + ".csv", index = False)
