@@ -40,7 +40,15 @@ Essentially, you can click the top green button which says 'code' and then eithe
 
 So the syntax for the powershell command is:
 
-python  "NAME_OF_PYTHON_FILE.py"  "NAME_OF_DIRECTORY_CONTAINING FILES"  "THRESHOLD"  "RADIUS"
+python  "NAME_OF_PYTHON_FILE.py"  "NAME_OF_DIRECTORY_CONTAINING FILES"  "NAME_OF_PROTEIN"  "THRESHOLD"  "RADIUS_IN_PIXELS"
+
+So you should end up with the following outputs:
+ - Image of Autophagy receptor post-threshold
+ - Image of Cytochrome C post-threshold
+ - Image of KNNs
+ - Image of KNN_RATIO
+ - CSV file with all Numerical data. Headers =  LEVELS OF TESTING, THRESHOLD, SEARCH_RADIUS, KNN, KNN_SELF, PIXEL_LOSS, KNN_CYT, KNN_SELF_CYT, CYT_AREA, PROT_AREA
+
 
 
 
