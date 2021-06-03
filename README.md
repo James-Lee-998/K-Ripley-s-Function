@@ -49,6 +49,8 @@ So you should end up with the following outputs:
  - Image of KNN_RATIO
  - CSV file with all Numerical data. Headers =  LEVELS OF TESTING, THRESHOLD, SEARCH_RADIUS, KNN, KNN_SELF, PIXEL_LOSS, KNN_CYT, KNN_SELF_CYT, CYT_AREA, PROT_AREA
 
+N.B. All output data is specifed with thresholds and radii. Due to division errors K_clustering needs to be calculated manually in all excel files.
+
 
 
 
