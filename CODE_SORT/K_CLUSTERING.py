@@ -19,11 +19,12 @@ HM_HIGH_VAL = 1000
 HEATMAP_SENS_CHANNEL_CYT = GREEN
 LIST_of_LISTS = {'DIR_HOME':[],'THRESHOLD': [], 'SEARCH_RADIUS': [],'KNN':[],'KNN_SELF':[],'PIXEL_LOSS':[],'KNN_CYT':[], 'KNN_SELF_CYT':[]}
 
-PATH, THRESH, RADI = sys.argv[1], sys.argv[2], sys.argv[3]
+PATH, PROTEIN, THRESH, RADI = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4]
 
 THRESHOLD = int(THRESH)
 THRESHOLD_CYT = 800
 SEARCH_RADIUS = int(RADI)
+PROT = PROTEIN
 
 if THRESHOLD_CYT == THRESHOLD:
     CYT_img = True
@@ -128,7 +129,7 @@ pbar = ProgressBar()
 for file in pbar(dir):
     try:
         DIR_HOME = str(file)
-        PROTEIN_DF = pd.DataFrame(pd.read_csv(PATH + "\\" + DIR_HOME + '\\TAX.txt' , sep = "\t", header = None, names = ['X','Y','Value']), columns = ['X','Y','Value'])
+        PROTEIN_DF = pd.DataFrame(pd.read_csv(PATH + "\\" + DIR_HOME + '\\' + PROTEIN + '.txt' , sep = "\t", header = None, names = ['X','Y','Value']), columns = ['X','Y','Value'])
         PROTEIN_DF = PROTEIN_DF[PROTEIN_DF['Value'] > int(THRESHOLD)]
         CYT_DF = pd.DataFrame(pd.read_csv(PATH + "\\" + DIR_HOME + '\\CYT.txt' , sep = "\t", header = None, names = ['X','Y','Value']), columns = ['X','Y','Value'])
         CYT_DF = CYT_DF[CYT_DF['Value'] > int(THRESHOLD_CYT)]
@@ -154,11 +155,11 @@ for file in pbar(dir):
         dfCombined['Neighbours_from_CYT'] = dfCombined.apply(countNeighbours_cyt, axis = 1)
         dfCombined['CYT_Clustering'] = dfCombined.apply(countNeighbours_self_from_cyt, axis = 1)
 
-        img_TAX = Image.new(mode='RGB',size=(maxX, maxY))
-        pixels = img_TAX.load()
+        img_PROT = Image.new(mode='RGB',size=(maxX, maxY))
+        pixels = img_PROT.load()
         PROTEIN_DF.apply(setColour_SENS, axis=1)
-        img_TAX_1 = img_TAX.transpose(PIL.Image.FLIP_TOP_BOTTOM)
-        img_TAX_1.save(PATH + "\\" + DIR_HOME + "/HEATMAP_PROT_" + str(THRESHOLD) + ".png")
+        img_PROT_1 = img_PROT.transpose(PIL.Image.FLIP_TOP_BOTTOM)
+        img_PROT_1.save(PATH + "\\" + DIR_HOME + "/HEATMAP_PROT_" + str(THRESHOLD) + ".png")
 
         img_KNN = Image.new(mode='RGB',size=(maxX, maxY), color = (255,255,255))
         pixels = img_KNN.load()
@@ -184,7 +185,6 @@ for file in pbar(dir):
         LIST_of_LISTS['KNN_SELF_CYT'].append((dfCombined['CYT_Clustering']).sum())
     except:
         continue
-
 
 df_final = pd.DataFrame(LIST_of_LISTS, columns = ["DIR_HOME","THRESHOLD","SEARCH_RADIUS","KNN","KNN_SELF","PIXEL_LOSS","KNN_CYT","KNN_SELF_CYT"])
 
