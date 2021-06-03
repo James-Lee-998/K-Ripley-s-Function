@@ -9,7 +9,7 @@ A listed directory is important for sorting data and telling the computer where 
 
 <img src='https://i.imgur.com/XzdN5HR.png' width = '300'>
 
-Note that we have four levels for test conditions and all repeats are present. I am still trying to find a way to streamline this approach but for now all we can do is just make all the files and duplicate them into other directories.
+Note that we have four levels for test conditions and all repeats are present. I am still trying to find a way to streamline this approach but for now all we can do is just make all the files and duplicate them into other directories. 
 
 (2) Array data
 
@@ -30,5 +30,7 @@ Now python is downloaded you have to specify a PATH for its environment. Essenti
 
 This is how you download packages to your internal environment and running python should automatically recognise the PATH variable. If you get an error which says PIP is not a available, e-mail me. Now just like in the gif go to the python file calle K-Clustering.py and look at all the imports and 'pip install them all'. If it doesn't work: error 'package does not exist' then it probably has another name.
 
-(4) Running the code
+(4) Running the code with an IDE
+
+
 
