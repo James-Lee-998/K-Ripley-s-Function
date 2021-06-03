@@ -7,7 +7,7 @@ Prior requirements to using this code involves a (1) directory list of items whi
 
 A listed directory is important for sorting data and telling the computer where specific file names will occur. Our code 'loops' through a set of files within a 'directory' and obtains a txt file from each file and uses it to gather data. The essential key here is to have universal directories with similar routes for searching. In our case, specified file names aren't nesseccary however a specific directory is initially required to tell the computer where everything is. We have three main directories, named after each autophagy receptor and within each we have a list of files that look like this:
 
-<img src='https://i.imgur.com/XzdN5HR.png' width = '300'>
+<img src='https://i.imgur.com/XzdN5HR.png' width = '600'>
 
 Note that we have four levels for test conditions and all repeats are present. I am still trying to find a way to streamline this approach but for now all we can do is just make all the files and duplicate them into other directories. 
 
@@ -15,7 +15,7 @@ Note that we have four levels for test conditions and all repeats are present. I
 
 Now we have sorted files we can add information to them. On Fiji/Imagej you can access pixel data in a text file and save it to specified directories. If you have images separate the channels and assign a different name for each channel. To take pixel data from imageJ: ANALYSE -> TOOLS -> Save XY coordinates
 
-<img src = "https://media.giphy.com/media/Fu7dQWS1h3SrvrSnwH/giphy.gif" width = "1000">
+<img src = "https://media.giphy.com/media/Fu7dQWS1h3SrvrSnwH/giphy.gif" width = "700">
 
 (3) Python
 
@@ -26,11 +26,21 @@ Now python is downloaded you have to specify a PATH for its environment. Essenti
 
 (3) Packages
 
-<img src = "https://media.giphy.com/media/jmGYwLDl4XR9fNfULT/giphy.gif" width = "1000">
+<img src = "https://media.giphy.com/media/jmGYwLDl4XR9fNfULT/giphy.gif" width = "700">
 
 This is how you download packages to your internal environment and running python should automatically recognise the PATH variable. If you get an error which says PIP is not a available, e-mail me. Now just like in the gif go to the python file calle K-Clustering.py and look at all the imports and 'pip install them all'. If it doesn't work: error 'package does not exist' then it probably has another name.
 
-(4) Running the code with an IDE
+(4) Running the code in powershell
+
+Firstly if you are new to github then you can read about how to use it: https://product.hubspot.com/blog/git-and-github-tutorial-for-beginners#:~:text=%20An%20Intro%20to%20Git%20and%20GitHub%20for,the%20command%20git%20commit%20-m%20%22Your...%20More%20
+
+Essentially, you can click the top green button which says 'code' and then either download a zip file or if you know how to use version control or git clone you can download it via the hyperlink. Once you have specified a directory for the code, open it in python IDLE and make necessary changes if need be. But do ask question if you would like to.
+
+<img src = "https://media.giphy.com/media/UsHR5X2NEYmVcQ4bkl/giphy.gif" width = "700">
+
+So the syntax for the powershell command is:
+
+python  "NAME_OF_PYTHON_FILE.py"  "NAME_OF_DIRECTORY_CONTAINING FILES"  "THRESHOLD"  "RADIUS"
 
 
 
